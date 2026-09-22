@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/rvldodo/hris-kit/lib"
+	"github.com/hris-management-system/go-kit/lib"
 )
 
 func init() {

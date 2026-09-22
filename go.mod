@@ -1,4 +1,4 @@
-module github.com/rvldodo/hris-kit
+module github.com/hris-management-system/go-kit
 
 go 1.26.1
 

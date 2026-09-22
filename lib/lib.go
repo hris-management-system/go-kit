@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rvldodo/hris-kit/constant"
+	"github.com/hris-management-system/go-kit/constant"
 )
 
 func GetStringPointerStatus(s string) *string {
