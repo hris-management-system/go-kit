@@ -2,7 +2,7 @@
 
 Shared Go library for the HRIS Management System. It holds the small, cross-cutting
 pieces that every service in the system needs — structured logging, environment
-config, error codes, paging rules, and formatting helpers — so they are defined
+config, error codes, paging rules, and conversion helpers — so they are defined
 once instead of being re-implemented (and drifting) in each service.
 
 ```
@@ -20,7 +20,7 @@ can depend on it without inheriting each other's stack.
 | [`logger`](logger/logger.go) | zap-based structured logging, plus request-scoped context (request ID, user ID, caller name) |
 | [`env`](env/config.go) | Typed environment variable reads with fallbacks; auto-loads `.env` |
 | [`errors`](errors/error.go) | `AppError` — an error code registry mapping each failure to an HTTP status and an internal status code |
-| [`lib`](lib/lib.go) | Nil-safe conversions, parsing, invoice-number builders, paging normalization, currency formatting |
+| [`lib`](lib/lib.go) | Nil-safe conversions, lenient parsing, date handling, paging normalization |
 | [`constant`](constant/const.go) | Shared constants (paging defaults and limits) |
 
 ## Install
@@ -185,22 +185,14 @@ limit, offset := lib.NormalizePaging(req.Page, req.PageSize)
 // pageSize > 100  → 100
 ```
 
-Formatting and identifiers:
+`GetStringPointerStatus` is the reporting-facing counterpart to
+`GetStringPointer`: instead of `nil`, an empty or placeholder value becomes a
+readable marker, so an export shows why a cell is blank.
 
 ```go
-lib.ConvertToRp(1500000)    // "Rp1.500.000"
-lib.ConvertToMl(250)        // "250 ml"
-lib.ConvertToPoint(1200)    // "1.200 poin"
-lib.Separate3Digits(1000)   // "1.000" (Indonesian separator)
-
-lib.GenerateVerificationCode()                  // 4-digit code, e.g. "4821"
-lib.GenerateOrderInvoice("20260922", 1042)      // "WH-ODR-INV/20260922/1042"
-lib.GeneratePaymentInvoice("20260922", 1042)    // "WH-PYM-INV/20260922/1042"
-lib.GenerateOrderInvoiceDoor("20260922", 1042)  // "WH-ODR-DS-INV/..." (door-to-door)
+lib.GetStringPointerStatus("")       // → "Unclean Data (No Call)"
+lib.GetStringPointerStatus("active") // → "active"
 ```
-
-The `Door` variants use a distinct prefix so an invoice number identifies the
-issuing system without a database lookup.
 
 `ParseDateToDateTime2` parses `MM/DD/YYYY` or `MM/DD/YY` and stamps it with the
 current wall-clock time, mirroring SQL Server's `SYSDATETIME()` behavior:

@@ -9,11 +9,6 @@ import (
 	"github.com/rvldodo/hris-kit/constant"
 )
 
-const (
-	minVerificationCode = 1000
-	maxVerificationCode = 9999
-)
-
 func GetStringPointerStatus(s string) *string {
 	switch s {
 	case "0", "", "Null":
