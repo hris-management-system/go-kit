@@ -2,7 +2,6 @@ package lib
 
 import (
 	"fmt"
-	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -145,81 +144,6 @@ func IsTruthyBit(value string) int {
 	}
 }
 
-func GenerateVerificationCode() string {
-	randInt := rand.Intn(maxVerificationCode-minVerificationCode) + minVerificationCode
-
-	return fmt.Sprintf("%d", randInt)
-}
-
-func Separate3Digits(number interface{}) string {
-	var amountStr string
-	switch number.(type) {
-	case int:
-		amountStr = fmt.Sprintf("%d", number)
-	case int64:
-		amountStr = fmt.Sprintf("%d", number)
-	case float64:
-		amountStr = fmt.Sprintf("%.f", number)
-	default:
-		amountStr = fmt.Sprintf("%s", number)
-	}
-
-	dividerTotal := len(amountStr) / 3
-	newAmount := ""
-	for i := 0; i < dividerTotal+1; i = i + 1 {
-		firstIndex := len(amountStr) - ((i + 1) * 3)
-		if firstIndex < 0 {
-			firstIndex = 0
-		}
-		secondIndex := len(amountStr) - (3 * i)
-		if secondIndex <= 0 {
-			break
-		}
-		if newAmount == "" {
-			newAmount = amountStr[firstIndex:secondIndex] + newAmount
-		} else {
-			newAmount = amountStr[firstIndex:secondIndex] + "." + newAmount
-		}
-	}
-	return newAmount
-}
-
-func ConvertToMl(amount float64) string {
-	return Separate3Digits(amount) + " ml"
-}
-
-func ConvertToRp(amount int64) string {
-	return "Rp" + Separate3Digits(amount)
-}
-
-func ConvertToPoint(amount float64) string {
-	return Separate3Digits(amount) + " poin"
-}
-
-func GeneratePaymentInvoiceDoor(time string, paymentRefNum int64) string {
-	return fmt.Sprintf("WH-PYM-DS-INV/%s/%d", time, paymentRefNum)
-}
-
-func GenerateOrderInvoiceDoor(time string, orderRefNum int64) string {
-	return fmt.Sprintf("WH-ODR-DS-INV/%s/%d", time, orderRefNum)
-}
-
-// GeneratePaymentInvoice builds the payments.ref_num for the consumer app.
-// Distinct prefix from GeneratePaymentInvoiceDoor so an invoice number says
-// which system issued it without a lookup.
-func GeneratePaymentInvoice(time string, paymentRefNum int64) string {
-	return fmt.Sprintf("WH-PYM-INV/%s/%d", time, paymentRefNum)
-}
-
-// GenerateOrderInvoice builds the orders.ref_num for the consumer app.
-func GenerateOrderInvoice(time string, orderRefNum int64) string {
-	return fmt.Sprintf("WH-ODR-INV/%s/%d", time, orderRefNum)
-}
-
-// NormalizePaging clamps caller-supplied paging to a sane window and converts
-// it to the LIMIT/OFFSET the repositories take. A page_size of 0 (the zero
-// value of an absent query param) means "use the default", not "return
-// nothing".
 func NormalizePaging(page, pageSize int) (limit, offset int) {
 	if page < 1 {
 		page = constant.DEFAULT_PAGE
